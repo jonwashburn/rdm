@@ -56,3 +56,27 @@ def boundary_modulus_log(sigma0: float, eps: float, t: float, primes: Tuple[int,
     return float(math.log(val + 1e-30))
 
 
+def first_primes(n: int) -> Tuple[int, ...]:
+    """
+    Return the first n primes using a simple sieve with an upper bound n*(log n + log log n) + 3.
+    Suitable for moderate n.
+    """
+    if n <= 0:
+        return tuple()
+    import math as _m
+    if n < 6:
+        bound = 15
+    else:
+        bound = int(n * (_m.log(n) + _m.log(_m.log(n))) + 3)
+    sieve = bytearray(b"\x01") * (bound + 1)
+    sieve[:2] = b"\x00\x00"
+    p = 2
+    while p * p <= bound:
+        if sieve[p]:
+            step = p
+            start = p * p
+            sieve[start: bound + 1: step] = b"\x00" * (((bound - start) // step) + 1)
+        p += 1
+    primes_list = [i for i, is_prime in enumerate(sieve) if is_prime]
+    return tuple(primes_list[:n])
+

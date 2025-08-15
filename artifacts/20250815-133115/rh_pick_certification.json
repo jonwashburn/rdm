@@ -1,0 +1,68 @@
+{
+  "ok": false,
+  "certs": [
+    {
+      "ok": false,
+      "details": [
+        {
+          "sigma": 0.01,
+          "n": 64,
+          "min_eig": -2216.047699661708,
+          "ok": false
+        },
+        {
+          "sigma": 0.005,
+          "n": 96,
+          "min_eig": -5208.909904825483,
+          "ok": false
+        }
+      ],
+      "interval": [
+        0.0,
+        10.0
+      ]
+    },
+    {
+      "ok": false,
+      "details": [
+        {
+          "sigma": 0.01,
+          "n": 64,
+          "min_eig": -7.8812337616051815,
+          "ok": false
+        },
+        {
+          "sigma": 0.005,
+          "n": 96,
+          "min_eig": -16.905861877195797,
+          "ok": false
+        }
+      ],
+      "interval": [
+        10.0,
+        20.0
+      ]
+    },
+    {
+      "ok": false,
+      "details": [
+        {
+          "sigma": 0.01,
+          "n": 64,
+          "min_eig": -0.0010373660120350317,
+          "ok": false
+        },
+        {
+          "sigma": 0.005,
+          "n": 96,
+          "min_eig": -0.0020329019627352914,
+          "ok": false
+        }
+      ],
+      "interval": [
+        20.0,
+        30.0
+      ]
+    }
+  ]
+}

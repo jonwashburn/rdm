@@ -1,0 +1,37 @@
+{
+  "timestamp": "2025-08-15T14:59:29Z",
+  "python": "3.9.6 (default, Apr 30 2025, 02:07:17) \n[Clang 17.0.0 (clang-1700.0.13.5)]",
+  "seed": 123456789,
+  "intervals": [
+    [
+      0.0,
+      5.0
+    ],
+    [
+      5.0,
+      10.0
+    ]
+  ],
+  "timings_sec": {
+    "C1_C2_lossless_kyp": 0.019992125000000027,
+    "D6_pick_toy": 1.6797718330000002,
+    "B3_outer_demo": 0.013116874999999695,
+    "D6_pick_lossless_intervals": 11.796138958,
+    "B2_mu_rs_prime_window": 0.006482082999999861,
+    "B3_outer_det2_xi": 0.30538412500000156,
+    "D6_pick_theta_from_J": 0.9345216249999986
+  },
+  "artifacts": {
+    "grid_s_vals.npy": "3a6122901455251d37c0aacb8ddd7718f41b1762420f138d0df170cf5b68371a",
+    "grid_theta_vals.npy": "970c4401e63839007ebdad2e94d59c403df26435b54833d38bf12f462a3d40a8",
+    "grid_pick_K.npy": "24e61610062a50e64238944dcdee893cf16e1caa32f2a77a7d15ea93d7c9d90d",
+    "outer_demo.json": "5d6c06185a018ceedd649c385f00aac2e3eb5aabb19e573b759188e2e8f66489",
+    "pick_certification.json": "baedbc20d13536cdc9bffb26902a60c96514f9a843a0a6b906bd2a4336d95fec",
+    "mu_rs_prime_window.json": "9b44750c794581ed1f92c2e7683758d9b18a6d66c63ea004b9741a7ae5b67c98",
+    "outer_boundary_modulus.json": "bc983cd84cfb55fd1cec6b0ac7d11d3ee2715ed892d6aa94b774eaaa9e0a894f",
+    "rh_pick_certification.json": "2b6a9bad211879c9fc2f026e462932bbc12f4255df0dc88be74b7eb958d1460d"
+  },
+  "env": {
+    "PYTHONPATH": "/Volumes/T9/Cursor-Active/RDM/rdm_repo"
+  }
+}
