@@ -28,6 +28,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--sigmas", type=str, default="5e-3,2e-3,1e-3", help="comma-separated sigma schedule for D6")
     p.add_argument("--nodes", type=str, default="96,128,192", help="comma-separated grid sizes for D6")
     p.add_argument("--use-outer", action="store_true", help="use outer normalization in Θ-from-J certification")
+    p.add_argument("--dps", type=int, default=150, help="mpmath precision (decimal places)")
+    p.add_argument("--outdir", type=str, default="artifacts", help="base output directory")
+    p.add_argument("--outer-samples", type=int, default=2048, help="samples for Poisson outer integral")
     return p.parse_args()
 
 
@@ -67,11 +70,13 @@ def main() -> None:
     K = pick_kernel(theta_vals, s_vals)
     ok = is_psd(K, tol=1e-10)
     print(f"Pick PSD on toy grid: {ok}; min eig={np.linalg.eigvalsh(K).min():.3e}")
+    print(f"[timing] D6_pick_toy: {timings['D6_pick_toy']:.3f}s")
     timings["D6_pick_toy"] = time.perf_counter() - t1
 
     # Artifact saving to per-run stamped directory (E2)
     stamp = time.strftime("%Y%m%d-%H%M%S", time.gmtime())
-    out_dir = pathlib.Path("artifacts") / stamp
+    base_out = pathlib.Path(args.outdir)
+    out_dir = base_out / stamp
     out_dir.mkdir(parents=True, exist_ok=True)
     np.save(out_dir / "grid_s_vals.npy", s_vals)
     np.save(out_dir / "grid_theta_vals.npy", theta_vals)
@@ -93,6 +98,7 @@ def main() -> None:
     print(f"Outer demo O(0.6+0i)≈{o_val:.6f}")
     with open(out_dir / "outer_demo.json", "w") as f:
         json.dump({"O(0.6+0i)": float(o_val)}, f, indent=2)
+    print(f"[timing] B3_outer_demo: {timings['B3_outer_demo']:.3f}s")
     timings["B3_outer_demo"] = time.perf_counter() - t2
 
     # D6.PICK certification on multiple intervals (export log)
@@ -117,6 +123,7 @@ def main() -> None:
     with open(out_dir / "pick_certification.json", "w") as f:
         json.dump({"ok": all_ok, "certs": certs}, f, indent=2)
     print(f"Pick certification overall ok={all_ok}")
+    print(f"[timing] D6_pick_lossless_intervals: {timings['D6_pick_lossless_intervals']:.3f}s")
     timings["D6_pick_lossless_intervals"] = time.perf_counter() - t3
 
     # B2.PORT μ_RS from a prime-window block (integrated)
@@ -128,17 +135,19 @@ def main() -> None:
     with open(out_dir / "mu_rs_prime_window.json", "w") as f:
         json.dump({"s": [s.real, s.imag], "phi_pw": [phi_pw.real, phi_pw.imag], "support": getattr(mu_pw, "support")}, f, indent=2)
     timings["B2_mu_rs_prime_window"] = time.perf_counter() - t4
+    print(f"[timing] B2_mu_rs_prime_window: {timings['B2_mu_rs_prime_window']:.3f}s")
 
     # B3.OUTER (boundary modulus) from det2/xi along Re s = 1/2+ε
     t5 = time.perf_counter()
     eps = float(args.eps)
     t_min = min(T1 for (T1, _T2) in intervals)
     t_max = max(T2 for (_T1, T2) in intervals)
-    t_grid_outer = np.linspace(t_min, t_max, 400)
+    t_grid_outer = np.linspace(t_min, t_max, max(400, args.outer_samples // 4))
     u_vals = [boundary_modulus_log(0.5, eps, float(t), tuple(primes)) for t in t_grid_outer]
     with open(out_dir / "outer_boundary_modulus.json", "w") as f:
         json.dump({"sigma0": 0.5, "eps": eps, "t": t_grid_outer.tolist(), "u": u_vals}, f, indent=2)
     timings["B3_outer_det2_xi"] = time.perf_counter() - t5
+    print(f"[timing] B3_outer_det2_xi: {timings['B3_outer_det2_xi']:.3f}s")
 
     # Optional: build outer from the boundary modulus and use Jhat := det2/(O*xi)
     O_from_det2_xi = None
@@ -147,7 +156,7 @@ def main() -> None:
             return float(boundary_modulus_log(0.5, eps, float(t), tuple(primes)))
 
         O_from_det2_xi = poisson_outer_from_modulus(
-            u=u_eps_lambda, sigma0=0.5, t_support=(t_min, t_max), samples=1024
+            u=u_eps_lambda, sigma0=0.5, t_support=(t_min, t_max), samples=int(args.outer_samples)
         )
         # Save a few outer samples along a vertical line
         s_probe = 0.5 + eps + 1j * np.linspace(t_min, t_max, 50)
@@ -162,7 +171,7 @@ def main() -> None:
     def theta_from_J(s: complex, primes_tuple: tuple[int, ...]) -> complex:
         try:
             import mpmath as mp
-            mp.dps = 100
+            mp.dps = int(args.dps)
         except Exception:
             pass
         denom = xi_completed(s, primes_tuple) + 1e-30
@@ -193,6 +202,7 @@ def main() -> None:
         json.dump({"ok": rh_ok, "certs": rh_certs}, f, indent=2)
     print(f"RH boundary PSD (Θ-from-J) overall ok={rh_ok}")
     timings["D6_pick_theta_from_J"] = time.perf_counter() - t6
+    print(f"[timing] D6_pick_theta_from_J: {timings['D6_pick_theta_from_J']:.3f}s")
 
     # Simple manifest: env, versions, hashes, seeds, timestamps
     def sha256(path: pathlib.Path) -> str:

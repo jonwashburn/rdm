@@ -35,11 +35,16 @@ def poisson_outer_from_modulus(
         # Poisson kernel for half-plane at height sigma - sigma0
         a = sigma - sigma0
         acc = 0.0
+        mass = 0.0
         for k, tau in enumerate(ts):
             kern = (1.0 / math.pi) * (a / (a * a + (t - tau) * (t - tau)))
             w = 0.5 if (k == 0 or k == samples - 1) else 1.0
             acc += w * kern * us[k]
+            mass += w * kern
         acc *= dt
+        mass *= dt
+        if mass > 0:
+            acc = acc / mass
         # Outer has modulus exp(P[u]) and is positive real (no phase here)
         return math.exp(acc)
 

@@ -27,5 +27,10 @@ jobs:
       - name: Run CLI smoke (outer enabled)
         run: |
           python3 scripts/run_rdm_is.py --use-outer --primes 50 --intervals "0,2"
+      - name: Upload smoke artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rdm-smoke-artifacts
+          path: artifacts/*
 
 

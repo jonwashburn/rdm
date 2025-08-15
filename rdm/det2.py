@@ -23,8 +23,6 @@ def xi_completed(s: complex, primes: Tuple[int, ...] | None = None) -> complex:
     """
     try:
         import mpmath as mp
-
-        mp.dps = 50
         s_mp = mp.mpf(s.real) + 1j * mp.mpf(s.imag)
         pref = 0.5 * s_mp * (1 - s_mp) * mp.power(mp.pi, -s_mp / 2.0) * mp.gamma(s_mp / 2.0)
         zeta = mp.zeta(s_mp)
