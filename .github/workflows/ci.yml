@@ -15,4 +15,17 @@ jobs:
       - run: pip install -e .
       - run: pytest
 
+  smoke:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -e .
+      - name: Run CLI smoke (outer enabled)
+        run: |
+          python3 scripts/run_rdm_is.py --use-outer --primes 50 --intervals "0,2"
+
 
